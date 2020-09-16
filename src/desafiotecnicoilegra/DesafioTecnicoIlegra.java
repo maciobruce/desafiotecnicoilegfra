@@ -9,6 +9,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
@@ -21,7 +22,7 @@ public class DesafioTecnicoIlegra {
     }
 
     private static void iniciaMonitoramentoDosArquivosDeVenda() {
-             // Cria o serviço de observação do diretório
+        // Cria o serviço de observação do diretório
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
             // Define o diterório a ser monitorado
             Path pathDosArquivosDeVenda = Paths.get(DIRETORIO_ENTRADA);
@@ -33,9 +34,10 @@ public class DesafioTecnicoIlegra {
             WatchKey notificaNovoArquivoDeVenda;
             // Aguarda o surgimento de um novo arquivo de venda
             while ((notificaNovoArquivoDeVenda = watchService.take()) != null) {
-                
-                relatorioDeVendas.processaArquivosDeVenda(pathDosArquivosDeVenda);
-                relatorioDeVendas.criarRelatorio();
+                for (WatchEvent<?> event : notificaNovoArquivoDeVenda.pollEvents()) {
+                    relatorioDeVendas.processaArquivosDeVenda(pathDosArquivosDeVenda);
+                    relatorioDeVendas.criarRelatorio();
+                }
                 // reinicia variáveis para contabilozação da próxima leitura de arquivos
                 reiniciaVariaveisDeRelatorio();
                 // Para aguardar novas notificações de arquivos de venda

@@ -13,6 +13,7 @@ public class Vendas {
 
     public static final String IDENTIFICADOR_VENDA = "003";
     public static final String SEPARADOR_ITENS_VENDA = "-";
+    public static final String SEPARADOR_ITENS = ",";
     private String idMaiorVenda = "-";
     private double valorMaiorVenda = 0;
     private Map<String, Double> valorDeVendasPorVendedor = new HashMap<>();
@@ -41,16 +42,22 @@ public class Vendas {
     public void processaDadosVenda(String[] dadosVenda, String nomeArquivo, String linhaAtual) {
         if (dadosVenda.length != 4) {
             System.out.println("Linha com dados inválido para venda: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+            return;
         }
         String idVenda = dadosVenda[1];
         String listaDeItens = dadosVenda[2];
-        // Valida se está no formato [Item ID-Item Quantity-Item Price]
-        if (listaDeItens.matches("/^[a-záàâãéèêíïóôõöúñ ]+$/i")) {
-            System.out.println("Linha com dados inválido para venda: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+        // Valida se está no formato [Item ID-Item Quantity-Item Price], onde Item Price é um número inteiro ou um decimal com 2 casas e o separador o "." (ponto)
+        if (!listaDeItens.matches("\\[\\d+-\\d+-(\\d+|\\d+\\.\\d{2})(,\\d+-\\d+-(\\d+|\\d+\\.\\d{2}))*\\]")) {
+            System.out.println("Linha com dados inválido nos itens de venda: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+            return;
+        }
+        // Valida se nome contém apenas letras e espaço (cada nome ao menos com 2 letras e sem acentos)
+        if (!dadosVenda[3].matches("[a-zA-Z]{2,}( [a-zA-Z ]{2,})*")) {
+            System.out.println("Linha com nome inválido para vendedor: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+            return;
         }
 
-        double valorVenda = processaItensVendidos(listaDeItens, nomeArquivo, linhaAtual, idVenda);
-
+        double valorVenda = processaItensVendidos(listaDeItens, idVenda);
         associaValorVendasAoVendedor(dadosVenda[3], valorVenda);
         
     }
@@ -59,8 +66,8 @@ public class Vendas {
      * Faz o processamento da lista de intens vendidos.
      * @return valor da venda
      */
-    private double processaItensVendidos(String listaDeItens, String nomeArquivo, String linhaAtual, String idVenda) {
-        String[] itensDaVenda = listaDeItens.substring(1, listaDeItens.lastIndexOf("]")).split(",");
+    private double processaItensVendidos(String listaDeItens, String idVenda) {
+        String[] itensDaVenda = listaDeItens.substring(1, listaDeItens.lastIndexOf("]")).split(SEPARADOR_ITENS);
         String[] infosItemVendido;
         int quantidade;
         double preco;
@@ -68,20 +75,8 @@ public class Vendas {
         for (String venda : itensDaVenda) {
             infosItemVendido = venda.split(SEPARADOR_ITENS_VENDA);
 
-            quantidade = 0;
-            try {
-                quantidade = Integer.parseInt(infosItemVendido[1]);
-            } catch (NumberFormatException ex) {
-                System.out.println("Linha com dado inválido para quantidade de itens na venda: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
-            }
-
-            preco = 0D;
-            try {
-                preco = Double.parseDouble(infosItemVendido[2]);
-            } catch (NumberFormatException ex) {
-                System.out.println("Linha com dado inválido para o preço do item: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
-            }
-
+            quantidade = Integer.parseInt(infosItemVendido[1]);
+            preco = Double.parseDouble(infosItemVendido[2]);
             valorVenda += (quantidade * preco);
 
         }

@@ -26,13 +26,15 @@ public class Vendedores {
     public void processaDadosVendedor(String[] dadosVendedor, String nomeArquivo, String linhaAtual) {
         if (dadosVendedor.length != 4) {
             System.out.println("Linha com dados inválido para vendedor: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+            return;
         }
-        String cnpjVendedor = dadosVendedor[1];
-        // Valida se o nome tem apenas letras (menos o ç), espaço e algumas letras acentudadas
-        if (cnpjVendedor.matches("/^[a-záàâãéèêíïóôõöúñ ]+$/i")) {
-            System.out.println("Nome inválido para vendedor: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+        String cpfVendedor = dadosVendedor[1];
+        // Valida se o CPF tem apenas os 11 números
+        if (!cpfVendedor.matches("\\d{11}")) {
+            System.out.println("CPF inválido para vendedor: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+            return;
         }
-        relacaoDevendedores.add(cnpjVendedor);
+        relacaoDevendedores.add(cpfVendedor);
     }
 
     public void reiniciaVariaveis() {

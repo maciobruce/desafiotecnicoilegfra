@@ -26,13 +26,15 @@ public class Clientes {
     public void processaDadosCliente(String[] dadosCliente, String nomeArquivo, String linhaAtual) {
         if (dadosCliente.length != 4) {
             System.out.println("Linha com dados inválido para cliente: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+            return;
         }
-        String cpfVendedor = dadosCliente[1];
+        String cnpjCliente = dadosCliente[1];
         // Valida se o nome tem apenas letras (menos o ç), espaço e algumas letras acentudadas
-        if (cpfVendedor.matches("/^[a-záàâãéèêíïóôõöúñ ]+$/i")) {
-            System.out.println("Nome inválido para cliente: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+        if (!cnpjCliente.matches("\\d{14}")) {
+            System.out.println("CNPJ inválido para cliente: arquivo=" + nomeArquivo + " - linha=" + linhaAtual);
+            return;
         }
-        relacaoDeClientes.add(cpfVendedor);
+        relacaoDeClientes.add(cnpjCliente);
     }
 
     public void reiniciaVariaveis() {
