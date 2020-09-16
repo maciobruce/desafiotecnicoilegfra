@@ -15,15 +15,23 @@ import java.nio.file.Paths;
 
 /**
  * Objeto responsável por manipular os arquivos de venda (em HOMEPATH/data/in) e criar o relatório (em HOMEPATH/data/out).
- * Os relatórios serão nomeado com o padrão "relatorio_venda -  [NOME DO ARQUIVO DE VENDA]".
+ * O relatório será nomeado como "relatorio_venda.txt".
  * @author Mácio Bruce
  */
 public class RelatorioDeVendas {
 
-    private static final String ARQUIVO_SAIDA = System.getenv("USERPROFILE") + "\\data\\out\\relatorio_venda - ";
+    private static final String ARQUIVO_SAIDA = System.getenv("USERPROFILE") + "\\data\\out\\relatorio_vendas.txt";
     private static final String SEPARADOR_DADOS = "ç";
 
-    public void carregaArquivoDeVenda(Path arquivo) {
+    public void processaArquivosDeVenda(Path diretorioDosArquivosDeVenda) {
+        try {
+            Files.list(diretorioDosArquivosDeVenda).forEach(RelatorioDeVendas::carregaArquivoDeVendas);
+        } catch (IOException ex) {
+            System.out.println("Ocorreu um problema na listagem dos arquivos de venda.\nErro: " + ex);
+        }
+    }
+
+    private static void carregaArquivoDeVendas(Path arquivo) {
         try (BufferedReader reader = Files.newBufferedReader(arquivo)) {
             String linhaAtual;
             String nomeArquivo = arquivo.getFileName().toString();
@@ -41,13 +49,12 @@ public class RelatorioDeVendas {
                 }
             }
         } catch (IOException ex) {
-            System.out.println("Ocorreu um problema na leitura dos arquivos de venda: " + ex);
+            System.out.println("Ocorreu um problema na leitura do arquivo: " + arquivo.getFileName() + "\nErro: " + ex);
         }
     }
 
-    public void criarRelatorio(String nomeArquivoDeVendas) {
-        // Para a criar de um único relatório para todos os arquivos de venda basta remover essa concatenação com o nomeArquivoDeVenda
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(ARQUIVO_SAIDA + nomeArquivoDeVendas))) {
+    public void criarRelatorio() {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(ARQUIVO_SAIDA))) {
             writer.write("Quantidade de vendedor = " + Vendedores.getInstance().getQuantidadeDeVendedores());
             writer.newLine();
             writer.write("Quantidade de clientes = " + Clientes.getInstance().getQuantidadeDeClientes());
