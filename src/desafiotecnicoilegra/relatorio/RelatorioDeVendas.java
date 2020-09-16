@@ -20,7 +20,7 @@ import java.nio.file.Paths;
  */
 public class RelatorioDeVendas {
 
-    private static final String ARQUIVO_SAIDA = System.getenv("USERPROFILE") + "\\data\\out\\relatorio_vendas.txt";
+    private static final String ARQUIVO_SAIDA = System.getenv("HOMEPATH") + "\\data\\out\\relatorio_vendas.txt";
     private static final String SEPARADOR_DADOS = "ç";
 
     public void processaArquivosDeVenda(Path diretorioDosArquivosDeVenda) {

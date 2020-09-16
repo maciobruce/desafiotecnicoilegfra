@@ -15,7 +15,7 @@ import java.nio.file.WatchService;
 
 public class DesafioTecnicoIlegra {
 
-    private static final String DIRETORIO_ENTRADA = System.getenv("USERPROFILE") + "\\data\\in\\";
+    private static final String DIRETORIO_ENTRADA = System.getenv("HOMEPATH") + "\\data\\in\\";
 
     public static void main(String[] args) {
         iniciaMonitoramentoDosArquivosDeVenda();
